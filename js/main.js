@@ -35,7 +35,7 @@ const block_types = {
     //  x: und
     //}
     //isAlive: false,
-    },
+  },
   WHITE: {
     type: "WHITE",
     sprite: {
@@ -199,12 +199,12 @@ class Block {
     let cur_step = 0;
 
     const animator = setInterval(() => {
-      if ( !this.isAlive ) {
+      if (!this.isAlive) {
         clearInterval(animator);
         return;
       }
 
-      const cur_animation_frame = (cur_step + 1) % animation.number_of_steps ;
+      const cur_animation_frame = (cur_step + 1) % animation.number_of_steps;
       this.sprite.x = animation.x_start + animation.x_step_size * cur_animation_frame;
       this.sprite.y = animation.y_start + animation.y_step_size * cur_animation_frame;
 
@@ -301,7 +301,7 @@ const game = {
     //const canvas = createHiDPICanvas(244, 260);
     const canvas = document.getElementById("canvas");
     this.ctx = canvas.getContext("2d");
-    
+
     this.info_height = Math.round(canvas.height / 13);
     this.width = canvas.width;
     this.height = canvas.height - this.info_height;
@@ -350,9 +350,9 @@ const game = {
       this.ctx.fillStyle = "#fff";
       this.ctx.fillText("Press mouse to start", this.width / 2, this.height / 2);
       timeout = setTimeout(() => {
-         this.ctx.fillStyle = "#111111";
-         this.ctx.fillRect(0, this.height / 2, this.width, this.font_size * 2);
-       }, 500);
+        this.ctx.fillStyle = "#111111";
+        this.ctx.fillRect(0, this.height / 2, this.width, this.font_size * 2);
+      }, 500);
     }, 700);
 
     window.addEventListener('click', function listener() {
@@ -399,10 +399,10 @@ const game = {
       this.newLevel();
     }
     else {
-     // this.menu();
+      // this.menu();
     }
   },
-  
+
   create: function () {
     const cur_level = levels["level_" + this.level];
     const start_y = cur_level.row_offset * this.block_height + this.border_width;
@@ -433,9 +433,10 @@ const game = {
     this.render();
 
     if (this.running) {
-      this.myRect = requestAnimationFrame(function () {
-        game.run();
-      });
+      // requestAnimationFrame(function () {
+      //   game.run();
+      // });
+      setTimeout(() => { game.run() }, 10);
     }
   },
   render: function () {
@@ -521,7 +522,7 @@ game.ball = {
     this.y = platform.y - this.height;
     this.dirX = 0;
     this.dirY = 0;
-    this.velocity = 3;
+    this.velocity = 2.5;
     this.closest_collision = {
       el: undefined,
       far: -1,
@@ -533,7 +534,7 @@ game.ball = {
       width: 5,
       height: 4,
     }
-    
+
   },
   jump: function () {
     this.dirY = -Math.sin(Math.PI / 3);
@@ -550,14 +551,14 @@ game.ball = {
 
     let start2, end2;
 
-    
+
     if (this.dirY < 0) {
-      //нижняя граница
+      //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       start2 = { x: element.x - 2, y: element.y + element.height + 2 };
       end2 = { x: element.x + element.width + 2, y: element.y + element.height + 2 };
     }
     else {
-      //верхняя граница
+      //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       start2 = { x: element.x - 2, y: element.y - 2 };
       end2 = { x: element.x + element.width + 2, y: element.y - 2 };
     }
@@ -566,23 +567,23 @@ game.ball = {
     let b1 = dir1.x;
     let d1 = -(a1 * start1.x + b1 * start1.y);
 
-    //проверяем пересечение с вертикальной и горизонтальной границей блока
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     for (let i = 0; i < 2; i++) {
       let dir2 = { x: end2.x - start2.x, y: end2.y - start2.y };
 
-      //считаем уравнения прямых проходящих через отрезки
+      //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       let a2 = -dir2.y;
       let b2 = dir2.x;
       let d2 = -(a2 * start2.x + b2 * start2.y);
 
-      //подставляем концы отрезков, для выяснения в каких полуплоскотях они
+      //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
       let seg1_line2_start = a2 * start1.x + b2 * start1.y + d2;
       let seg1_line2_end = a2 * end1.x + b2 * end1.y + d2;
 
       let seg2_line1_start = a1 * start2.x + b1 * start2.y + d1;
       let seg2_line1_end = a1 * end2.x + b1 * end2.y + d1;
 
-      //если концы одного отрезка имеют один знак, значит он в одной полуплоскости и пересечения нет.
+      //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ.
       if (seg1_line2_start * seg1_line2_end < 0 && seg2_line1_start * seg2_line1_end < 0) {
         let u = seg1_line2_start / (seg1_line2_start - seg1_line2_end);
         let out_intersection = u * this.velocity;
@@ -598,13 +599,13 @@ game.ball = {
         return;
 
       if (this.dirX < 0) {
-        //правая граница
+        //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         start2 = { x: element.x + element.width + 2, y: element.y - 2 };
         end2 = { x: element.x + element.width + 2, y: element.y + element.height + 2 };
       }
       else {
-        //левая граница
-        start2 = { x: element.x - 2, y: element.y - 2};
+        //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        start2 = { x: element.x - 2, y: element.y - 2 };
         end2 = { x: element.x - 2, y: element.y + element.height + 2 };
       }
     }
@@ -684,7 +685,7 @@ game.platform = {
   ball: undefined,
   sprite: undefined,
   animation: undefined,
-  
+
 
   init: function (type) {
     if (type === this.MEDIUM) {
@@ -726,7 +727,7 @@ game.platform = {
     this.ball = false;
   },
 
-  animatePlatform: function() {
+  animatePlatform: function () {
     let cur_step = 0;
     const cur_type = this.type;
 
