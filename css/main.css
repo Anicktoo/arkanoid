@@ -1,0 +1,52 @@
+:root {
+    --canvas_width: 224px;
+    --canvas_height: 260px;
+}
+
+@font-face {
+    font-family: 'pixelFont';
+    src: local("QuinqueFive"), url("../font/Quinquefive-K7qep.ttf") format('opentype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000;
+    cursor: url('../img/cursor.svg'), move;
+}
+
+.wrapper {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+}
+
+canvas {
+    image-rendering: pixelated;
+}
+
+@media (min-width: 224px) {
+    canvas {
+        width: var(--canvas_width);
+        height: var(--canvas_height);
+    }
+}
+
+@media (min-width: 448px) {
+    canvas {
+        width: calc(var(--canvas_width) * 2);
+        height: calc(var(--canvas_height) * 2);
+    }
+}
+
+@media (min-width: 672px)  {
+    canvas {
+        width: calc(var(--canvas_width) * 3);
+        height: calc(var(--canvas_height) * 3);
+    }
+}
+
