@@ -1,0 +1,111 @@
+{
+    "NULL": {
+        "type": "NULL"
+    },
+    "WHITE": {
+        "type": "WHITE",
+        "sprite": {
+            "x": 0,
+            "y": 0,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "ORANGE": {
+        "type": "ORANGE",
+        "sprite": {
+            "x": 16,
+            "y": 0,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "RED": {
+        "type": "RED",
+        "sprite": {
+            "x": 0,
+            "y": 8,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "BLUE": {
+        "type": "BLUE",
+        "sprite": {
+            "x": 16,
+            "y": 8,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "CYAN": {
+        "type": "CYAN",
+        "sprite": {
+            "x": 32,
+            "y": 0,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "GREEN": {
+        "type": "GREEN",
+        "sprite": {
+            "x": 48,
+            "y": 0,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "MAGENTA": {
+        "type": "MAGENTA",
+        "sprite": {
+            "x": 32,
+            "y": 8,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "YELLOW": {
+        "type": "YELLOW",
+        "sprite": {
+            "x": 48,
+            "y": 8,
+            "width": 16,
+            "height": 8
+        }
+    },
+    "SILVER": {
+        "type": "SILVER",
+        "sprite": {
+            "x": 0,
+            "y": 16,
+            "width": 16,
+            "height": 8
+        },
+        "animation": {
+            "x_start": 0,
+            "y_start": 16,
+            "x_step_size": 16,
+            "y_step_size": 0,
+            "number_of_steps": 6,
+            "step_duration_ms": 100
+        }
+    },
+    "GOLD": {
+        "type": "GOLD",
+        "sprite": {
+            "x": 0,
+            "y": 24,
+            "width": 16,
+            "height": 8
+        },
+        "animation": {
+            "x_start": 0,
+            "y_start": 24,
+            "x_step_size": 16,
+            "y_step_size": 0,
+            "number_of_steps": 6,
+            "step_duration_ms": 100
+        }
+    }
+}

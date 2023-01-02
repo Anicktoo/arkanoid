@@ -26,124 +26,6 @@ const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnim
 //  return can;
 //}
 
-const block_types = {
-  NULL: {
-    type: "NULL",
-    //width: 64,
-    //height: 32,
-    //sprite: {
-    //  x: und
-    //}
-    //isAlive: false,
-  },
-  WHITE: {
-    type: "WHITE",
-    sprite: {
-      x: 0,
-      y: 0,
-      width: 16,
-      height: 8,
-    },
-  },
-  ORANGE: {
-    type: "ORANGE",
-    sprite: {
-      x: 16,
-      y: 0,
-      width: 16,
-      height: 8,
-    },
-  },
-  RED: {
-    type: "RED",
-    sprite: {
-      x: 0,
-      y: 8,
-      width: 16,
-      height: 8,
-    },
-  },
-  BLUE: {
-    type: "BLUE",
-    sprite: {
-      x: 16,
-      y: 8,
-      width: 16,
-      height: 8,
-    },
-  },
-  CYAN: {
-    type: "CYAN",
-    sprite: {
-      x: 32,
-      y: 0,
-      width: 16,
-      height: 8,
-    },
-  },
-  GREEN: {
-    type: "GREEN",
-    sprite: {
-      x: 48,
-      y: 0,
-      width: 16,
-      height: 8,
-    },
-  },
-  MAGENTA: {
-    type: "MAGENTA",
-    sprite: {
-      x: 32,
-      y: 8,
-      width: 16,
-      height: 8,
-    },
-  },
-  YELLOW: {
-    type: "YELLOW",
-    sprite: {
-      x: 48,
-      y: 8,
-      width: 16,
-      height: 8,
-    },
-  },
-  SILVER: {
-    type: "SILVER",
-    sprite: {
-      x: 0,
-      y: 16,
-      width: 16,
-      height: 8,
-    },
-    animation: {
-      x_start: 0,
-      y_start: 16,
-      x_step_size: 16,
-      y_step_size: 0,
-      number_of_steps: 6,
-      step_duration_ms: 100,
-    }
-  },
-  GOLD: {
-    type: "GOLD",
-    sprite: {
-      x: 0,
-      y: 24,
-      width: 16,
-      height: 8,
-    },
-    animation: {
-      x_start: 0,
-      y_start: 24,
-      x_step_size: 16,
-      y_step_size: 0,
-      number_of_steps: 6,
-      step_duration_ms: 100,
-    }
-  }
-};
-
 class Block {
   x;
   y;
@@ -166,12 +48,12 @@ class Block {
     Object.assign(this.sprite, block_type.sprite);
     Object.assign(this.animation, block_type.animation);
     this.isAlive = isAlive;
-    if (this.type === block_types.SILVER.type)
+    if (this.type === game.block_types.SILVER.type)
       this.lastLife = false;
   }
 
   hit() {
-    if (this.type === block_types.SILVER.type) {
+    if (this.type === game.block_types.SILVER.type) {
       if (this.lastLife) {
         game.play_audio(game.sounds.standart_block);
         this.destroyBlock();
@@ -217,53 +99,6 @@ class Block {
   }
 }
 
-const levels = {
-  level_1: {
-    row_offset: 4,
-    column_offset: 0,
-    structure: [
-      ["SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER"],
-      ["RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED"],
-      ["YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW"],
-      ["BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE"],
-      ["MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA"],
-      ["GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN"],
-    ],
-    background_sprite: {
-      x: 0,
-      y: 0,
-      width: 224,
-      height: 240,
-    }
-  },
-
-  level_2: {
-    row_offset: 2,
-    column_offset: 0,
-    structure: [
-      ["WHITE"],
-      ["WHITE", "ORANGE"],
-      ["WHITE", "ORANGE", "CYAN"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE", "CYAN"],
-      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE", "CYAN", "GREEN"],
-      ["SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "RED"],
-    ],
-    background_sprite: {
-      x: 232,
-      y: 0,
-      width: 224,
-      height: 240,
-    }
-  },
-};
-
 const game = {
   ctx: undefined,
   font_size: undefined,
@@ -271,6 +106,7 @@ const game = {
   height: undefined,
   border_width: undefined,
   info_height: undefined,
+  block_types: undefined,
   block_width: undefined,
   block_height: undefined,
   blocks: undefined,
@@ -278,7 +114,8 @@ const game = {
   platform: undefined,
   score: 0,
   block_number: 0,
-  level: 2,
+  levels: undefined,
+  level: 1,
   running: undefined,
   inMenu: undefined,
   nextLevel: undefined,
@@ -313,24 +150,46 @@ const game = {
     this.ctx.font = this.font_size + "px pixelFont";
     this.ctx.textBaseline = "top";
 
-    this.load();
-    setTimeout(() => { this.menu() }, 100);
-    //this.menu();
+    Promise.all([this.load(), this.loadLevel(), this.loadBlocks()])
+      .then(() => { this.menu() });
+
+  },
+  loadBlocks: function () {
+    return new Promise((resolve) => {
+      fetch("../block_types.json")
+        .then((data) => data.json())
+        .then((json) => {
+          this.block_types = json;
+          resolve();
+        });
+    })
+  },
+  loadLevel: function () {
+    return new Promise((resolve) => {
+      fetch("../levels.json")
+        .then((data) => data.json())
+        .then((json) => {
+          this.levels = json;
+          resolve();
+        });
+    })
   },
   load: function () {
-    for (let key in this.sprites) {
-      this.sprites[key] = new Image();
-      this.sprites[key].src = "img/" + key + ".png";
-    }
-
-    for (let key in this.sounds) {
-      //this.sounds[key] = new Audio("sounds/" + key + ".wav");
-      this.sounds[key] = new Audio();
-      const src1 = document.createElement("source");
-      src1.type = "audio/mpeg";
-      src1.src = "sounds/" + key + ".wav";
-      this.sounds[key].appendChild(src1);
-    }
+    return new Promise((resolve) => {
+      for (let key in this.sprites) {
+        this.sprites[key] = new Image();
+        this.sprites[key].src = "img/" + key + ".png";
+      }
+      for (let key in this.sounds) {
+        //this.sounds[key] = new Audio("sounds/" + key + ".wav");
+        this.sounds[key] = new Audio();
+        const src1 = document.createElement("source");
+        src1.type = "audio/mpeg";
+        src1.src = "sounds/" + key + ".wav";
+        this.sounds[key].appendChild(src1);
+      }
+      resolve();
+    })
   },
   menu: function () {
     this.ctx.clearRect(0, 0, this.width, this.height + this.info_height);
@@ -403,8 +262,8 @@ const game = {
     }
   },
 
-  create: function () {
-    const cur_level = levels["level_" + this.level];
+  create: async function () {
+    const cur_level = this.levels["level_" + this.level];
     const start_y = cur_level.row_offset * this.block_height + this.border_width;
     const start_x = cur_level.column_offset * this.block_width + this.border_width;
 
@@ -413,14 +272,14 @@ const game = {
     for (let row = 0; row < cur_level.structure.length; row++) {
       for (let col = 0; col < cur_level.structure[row].length; col++) {
         const cur_block_type_name = cur_level.structure[row][col];
-        if (cur_block_type_name === block_types.NULL.type)
+        if (cur_block_type_name === this.block_types.NULL.type)
           continue;
         const cur_block = new Block(
           start_x + this.block_width * col,
           start_y + this.block_height * row,
           this.block_width,
           this.block_height,
-          block_types[cur_block_type_name],
+          this.block_types[cur_block_type_name],
           true
         );
         this.blocks.push(cur_block);
@@ -553,12 +412,10 @@ game.ball = {
 
 
     if (this.dirY < 0) {
-      //������ �������
       start2 = { x: element.x - 2, y: element.y + element.height + 2 };
       end2 = { x: element.x + element.width + 2, y: element.y + element.height + 2 };
     }
     else {
-      //������� �������
       start2 = { x: element.x - 2, y: element.y - 2 };
       end2 = { x: element.x + element.width + 2, y: element.y - 2 };
     }
@@ -567,23 +424,19 @@ game.ball = {
     let b1 = dir1.x;
     let d1 = -(a1 * start1.x + b1 * start1.y);
 
-    //��������� ����������� � ������������ � �������������� �������� �����
     for (let i = 0; i < 2; i++) {
       let dir2 = { x: end2.x - start2.x, y: end2.y - start2.y };
 
-      //������� ��������� ������ ���������� ����� �������
       let a2 = -dir2.y;
       let b2 = dir2.x;
       let d2 = -(a2 * start2.x + b2 * start2.y);
 
-      //����������� ����� ��������, ��� ��������� � ����� ������������� ���
       let seg1_line2_start = a2 * start1.x + b2 * start1.y + d2;
       let seg1_line2_end = a2 * end1.x + b2 * end1.y + d2;
 
       let seg2_line1_start = a1 * start2.x + b1 * start2.y + d1;
       let seg2_line1_end = a1 * end2.x + b1 * end2.y + d1;
 
-      //���� ����� ������ ������� ����� ���� ����, ������ �� � ����� ������������� � ����������� ���.
       if (seg1_line2_start * seg1_line2_end < 0 && seg2_line1_start * seg2_line1_end < 0) {
         let u = seg1_line2_start / (seg1_line2_start - seg1_line2_end);
         let out_intersection = u * this.velocity;
@@ -599,12 +452,10 @@ game.ball = {
         return;
 
       if (this.dirX < 0) {
-        //������ �������
         start2 = { x: element.x + element.width + 2, y: element.y - 2 };
         end2 = { x: element.x + element.width + 2, y: element.y + element.height + 2 };
       }
       else {
-        //����� �������
         start2 = { x: element.x - 2, y: element.y - 2 };
         end2 = { x: element.x - 2, y: element.y + element.height + 2 };
       }
