@@ -2,30 +2,6 @@ const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestA
   window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
-//const PIXEL_RATIO = (function () {
-//  let ctx = document.createElement("canvas").getContext("2d"),
-//    dpr = window.devicePixelRatio || 1,
-//    bsr = ctx.webkitBackingStorePixelRatio ||
-//      ctx.mozBackingStorePixelRatio ||
-//      ctx.msBackingStorePixelRatio ||
-//      ctx.oBackingStorePixelRatio ||
-//      ctx.backingStorePixelRatio || 1;
-
-//  return dpr / bsr;
-//})();
-
-
-//createHiDPICanvas = function (w, h, ratio) {
-//  if (!ratio) { ratio = PIXEL_RATIO; }
-//  let can = document.createElement("canvas");
-//  can.width = w * ratio;
-//  can.height = h * ratio;
-//  can.style.width = w + "px";
-//  can.style.height = h + "px";
-//  can.getContext("2d").setTransform(ratio, 0, 0, ratio, 0, 0);
-//  return can;
-//}
-
 class Block {
   x;
   y;
@@ -73,7 +49,7 @@ class Block {
   destroyBlock() {
     this.isAlive = false;
     game.block_number--;
-    game.score += 80;
+    game.addScore(80);
   }
 
   animateBlock(animation) {
@@ -113,6 +89,7 @@ const game = {
   ball: undefined,
   platform: undefined,
   score: 0,
+  best_score: 0,
   block_number: 0,
   levels: undefined,
   level: 1,
@@ -135,10 +112,8 @@ const game = {
   },
 
   init: function () {
-    //const canvas = createHiDPICanvas(244, 260);
     const canvas = document.getElementById("canvas");
     this.ctx = canvas.getContext("2d");
-
     this.info_height = Math.round(canvas.height / 13);
     this.width = canvas.width;
     this.height = canvas.height - this.info_height;
@@ -150,7 +125,7 @@ const game = {
     this.ctx.font = this.font_size + "px pixelFont";
     this.ctx.textBaseline = "top";
 
-    Promise.all([this.load(), this.loadLevel(), this.loadBlocks()])
+    Promise.all([this.loadSprites(), this.loadLevel(), this.loadBlocks(), this.loadSounds()])
       .then(() => { this.menu() });
 
   },
@@ -174,40 +149,60 @@ const game = {
         });
     })
   },
-  load: function () {
+  loadSprites: function () {
     return new Promise((resolve) => {
-      for (let key in this.sprites) {
+      const keys = Object.keys(this.sprites);
+      let i = 0;
+      const loop = (key) => {
         this.sprites[key] = new Image();
+        this.sprites[key].onload = () => {
+          if (i == keys.length - 1)
+            resolve();
+          else
+            loop(keys[++i]);
+        }
         this.sprites[key].src = "img/" + key + ".png";
       }
-      for (let key in this.sounds) {
-        //this.sounds[key] = new Audio("sounds/" + key + ".wav");
-        this.sounds[key] = new Audio();
-        const src1 = document.createElement("source");
-        src1.type = "audio/mpeg";
-        src1.src = "sounds/" + key + ".wav";
-        this.sounds[key].appendChild(src1);
+      loop(keys[i]);
+    })
+  },
+  loadSounds: function () {
+    return new Promise((resolve) => {
+      const keys = Object.keys(this.sounds);
+      let i = 0;
+      const loop = (key) => {
+        this.sounds[key] = new Audio("sounds/" + key + ".wav");
+        this.sounds[key].onloadstart = () => {
+          if (i == keys.length - 1)
+            resolve();
+          else
+            loop(keys[++i]);
+        }
       }
-      resolve();
+      loop(keys[i]);
     })
   },
   menu: function () {
     this.ctx.clearRect(0, 0, this.width, this.height + this.info_height);
     this.ctx.fillStyle = "#111111";
     this.ctx.fillRect(0, 0, this.width, this.height + this.info_height);
+    console.log(this.sprites.logo.width);
     this.ctx.drawImage(this.sprites.logo, Math.round(this.width / 2 - this.sprites.logo.width / 2), Math.round(this.height / 4), this.sprites.logo.width, this.sprites.logo.height);
     this.ctx.fillStyle = "#ff0000";
-    this.ctx.fillText("Score", this.border_width, this.height + 2);
-    this.ctx.fillText("High score", this.width / 2, this.height + 2);
+    this.ctx.fillText("Score", this.border_width, this.height + 2 + 0.8);
+    this.ctx.fillText("High score", this.width / 2, this.height + 2 + 0.8);
     this.ctx.fillStyle = "#fff";
-    this.ctx.fillText(this.score.toString(), this.border_width, this.height + 10);
-    this.ctx.fillText(this.score.toString(), this.width / 2, this.height + 10);
-
+    this.ctx.fillText(addSpace(this.score), this.border_width, this.height + 10 + 0.8);
+    this.ctx.fillText(addSpace(this.best_score), this.width / 2, this.height + 10 + 0.8);
+    function addSpace(score) {
+      return score.toString().split('').join(' ');
+    }
     this.ctx.textAlign = "center";
     let timeout;
     const interval = setInterval(() => {
       this.ctx.fillStyle = "#fff";
-      this.ctx.fillText("Press mouse to start", this.width / 2, this.height / 2);
+
+      this.ctx.fillText("Press mouse to start", this.width / 2, this.height / 2 + 0.8);
       timeout = setTimeout(() => {
         this.ctx.fillStyle = "#111111";
         this.ctx.fillRect(0, this.height / 2, this.width, this.font_size * 2);
@@ -287,15 +282,20 @@ const game = {
       }
     }
   },
+  old_time: 0,
   run: function () {
     this.update();
     this.render();
 
     if (this.running) {
-      // requestAnimationFrame(function () {
-      //   game.run();
-      // });
-      setTimeout(() => { game.run() }, 10);
+      requestAnimationFrame((time) => {
+        if (time < 10000) {
+          console.log(time - this.old_time);
+          this.old_time = time;
+        }
+        this.run();
+      });
+      //setTimeout(() => { game.run() }, 10);
     }
   },
   render: function () {
@@ -312,11 +312,14 @@ const game = {
     this.ctx.fillStyle = "#111111";
     this.ctx.fillRect(0, this.height, this.width, this.info_height);
     this.ctx.fillStyle = "#ff0000";
-    this.ctx.fillText("SCORE", this.border_width, this.height + 2);
-    this.ctx.fillText("HIGH SCORE", this.width / 2, this.height + 2);
+    this.ctx.fillText("SCORE", this.border_width, this.height + 2 + 0.8);
+    this.ctx.fillText("HIGH SCORE", this.width / 2, this.height + 2 + 0.8);
     this.ctx.fillStyle = "#fff";
-    this.ctx.fillText(this.score.toString(), this.border_width, this.height + 10);
-    this.ctx.fillText(this.score.toString(), this.width / 2, this.height + 10);
+    this.ctx.fillText(addSpace(this.score), this.border_width, this.height + 10 + 0.8);
+    this.ctx.fillText(addSpace(this.best_score), this.width / 2, this.height + 10 + 0.8);
+    function addSpace(score) {
+      return score.toString().split('').join(' ');
+    }
   },
   update: function () {
     if (this.ball.collidePlatform(this.platform)) {
@@ -341,6 +344,11 @@ const game = {
     }
 
     this.ball.checkBounds();
+  },
+  addScore: function (num) {
+    this.score += num;
+    if (this.score > this.best_score)
+      this.best_score = this.score;
   },
   over: function (win) {
     this.running = false;
@@ -597,24 +605,6 @@ game.platform = {
   }
 
 }
-
-//Object.defineProperty(
-//  game.platform,
-//  {
-//    SMALL: {
-//      enumerable: true,
-//      value: 'small',
-//    },
-//    MEDIUM: {
-//      enumerable: true,
-//      value: 'mid',
-//    },
-//    MEDIUM: {
-//      enumerable: true,
-//      value: 'big',
-//    }
-//  }
-//);
 
 window.addEventListener("load", function () {
   game.init();
