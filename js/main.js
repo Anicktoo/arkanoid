@@ -8,6 +8,7 @@ class Block {
   width;
   height;
   type;
+  score;
   sprite = {
   };
   animation = {
@@ -21,6 +22,7 @@ class Block {
     this.width = width;
     this.height = height;
     this.type = block_type.type;
+    this.score = block_type.score;
     Object.assign(this.sprite, block_type.sprite);
     Object.assign(this.animation, block_type.animation);
     this.isAlive = isAlive;
@@ -49,7 +51,7 @@ class Block {
   destroyBlock() {
     this.isAlive = false;
     game.block_number--;
-    game.addScore(80);
+    game.addScore(this.score);
   }
 
   animateBlock(animation) {
@@ -83,8 +85,11 @@ const game = {
   border_width: undefined,
   info_height: undefined,
   block_types: undefined,
+  platform_types: undefined,
   block_width: undefined,
   block_height: undefined,
+  moveControl: undefined,
+  startControl: undefined,
   blocks: undefined,
   ball: undefined,
   platform: undefined,
@@ -92,10 +97,10 @@ const game = {
   best_score: 0,
   block_number: 0,
   levels: undefined,
-  level: 1,
+  level: 0,
+  levelStartAnim: undefined,
   running: undefined,
   inMenu: undefined,
-  nextLevel: undefined,
   background: undefined,
   audio_current_playing: undefined,
   sprites: {
@@ -106,6 +111,8 @@ const game = {
     block: undefined,
   },
   sounds: {
+    main_menu: undefined,
+    level_start: undefined,
     standart_block: undefined,
     strong_block: undefined,
     platform: undefined,
@@ -125,78 +132,88 @@ const game = {
     this.ctx.font = this.font_size + "px pixelFont";
     this.ctx.textBaseline = "top";
 
-    Promise.all([this.loadSprites(), this.loadLevel(), this.loadBlocks(), this.loadSounds()])
+    function loadBlocks() {
+      return new Promise((resolve) => {
+        fetch("../block_types.json")
+          .then((data) => data.json())
+          .then((json) => {
+            game.block_types = json;
+            resolve();
+          });
+      })
+    };
+    function loadPlatform() {
+      return new Promise((resolve) => {
+        fetch("../platform_types.json")
+          .then((data) => data.json())
+          .then((json) => {
+            game.platform_types = json;
+            resolve();
+          });
+      })
+    };
+    function loadLevel() {
+      return new Promise((resolve) => {
+        fetch("../levels.json")
+          .then((data) => data.json())
+          .then((json) => {
+            game.levels = json;
+            resolve();
+          });
+      })
+    };
+    function loadSprites() {
+      return new Promise((resolve) => {
+        const keys = Object.keys(game.sprites);
+        let i = 0;
+        const loop = (key) => {
+          game.sprites[key] = new Image();
+          game.sprites[key].onload = () => {
+            if (i == keys.length - 1)
+              resolve();
+            else
+              loop(keys[++i]);
+          }
+          game.sprites[key].src = "img/" + key + ".png";
+        }
+        loop(keys[i]);
+      })
+    };
+    function loadSounds() {
+      return new Promise((resolve) => {
+        const keys = Object.keys(game.sounds);
+        let i = 0;
+        const loop = (key) => {
+          game.sounds[key] = new Audio("sounds/" + key + ".wav");
+          game.sounds[key].onloadstart = () => {
+            if (i == keys.length - 1)
+              resolve();
+            else
+              loop(keys[++i]);
+          }
+        }
+        loop(keys[i]);
+      })
+    };
+    Promise.all([loadSprites(), loadLevel(), loadBlocks(), loadPlatform(), loadSounds()])
       .then(() => { this.menu() });
 
   },
-  loadBlocks: function () {
-    return new Promise((resolve) => {
-      fetch("../block_types.json")
-        .then((data) => data.json())
-        .then((json) => {
-          this.block_types = json;
-          resolve();
-        });
-    })
-  },
-  loadLevel: function () {
-    return new Promise((resolve) => {
-      fetch("../levels.json")
-        .then((data) => data.json())
-        .then((json) => {
-          this.levels = json;
-          resolve();
-        });
-    })
-  },
-  loadSprites: function () {
-    return new Promise((resolve) => {
-      const keys = Object.keys(this.sprites);
-      let i = 0;
-      const loop = (key) => {
-        this.sprites[key] = new Image();
-        this.sprites[key].onload = () => {
-          if (i == keys.length - 1)
-            resolve();
-          else
-            loop(keys[++i]);
-        }
-        this.sprites[key].src = "img/" + key + ".png";
-      }
-      loop(keys[i]);
-    })
-  },
-  loadSounds: function () {
-    return new Promise((resolve) => {
-      const keys = Object.keys(this.sounds);
-      let i = 0;
-      const loop = (key) => {
-        this.sounds[key] = new Audio("sounds/" + key + ".wav");
-        this.sounds[key].onloadstart = () => {
-          if (i == keys.length - 1)
-            resolve();
-          else
-            loop(keys[++i]);
-        }
-      }
-      loop(keys[i]);
-    })
-  },
   menu: function () {
+    this.play_audio(this.sounds.main_menu);
     this.ctx.clearRect(0, 0, this.width, this.height + this.info_height);
     this.ctx.fillStyle = "#111111";
     this.ctx.fillRect(0, 0, this.width, this.height + this.info_height);
-    console.log(this.sprites.logo.width);
     this.ctx.drawImage(this.sprites.logo, Math.round(this.width / 2 - this.sprites.logo.width / 2), Math.round(this.height / 4), this.sprites.logo.width, this.sprites.logo.height);
-    this.ctx.fillStyle = "#ff0000";
-    this.ctx.fillText("Score", this.border_width, this.height + 2 + 0.8);
-    this.ctx.fillText("High score", this.width / 2, this.height + 2 + 0.8);
-    this.ctx.fillStyle = "#fff";
-    this.ctx.fillText(addSpace(this.score), this.border_width, this.height + 10 + 0.8);
-    this.ctx.fillText(addSpace(this.best_score), this.width / 2, this.height + 10 + 0.8);
-    function addSpace(score) {
-      return score.toString().split('').join(' ');
-    }
+    // this.ctx.fillStyle = "#ff0000";
+    // this.ctx.fillText("Score", this.border_width, this.height + 2 + 0.8);
+    // this.ctx.fillText("High score", this.width / 2, this.height + 2 + 0.8);
+    // this.ctx.fillStyle = "#fff";
+    // this.ctx.fillText(addSpace(this.score), this.border_width, this.height + 10 + 0.8);
+    // this.ctx.fillText(addSpace(this.best_score), this.width / 2, this.height + 10 + 0.8);
+    // function addSpace(score) {
+    //   return score.toString().split('').join(' ');
+    // }
     this.ctx.textAlign = "center";
     let timeout;
     const interval = setInterval(() => {
@@ -216,12 +233,28 @@ const game = {
     }, { once: true });
   },
   start: function () {
-    this.setControl();
     this.newLevel();
+    this.run();
+  },
+  newLevel: function () {
+    this.play_audio(this.sounds.level_start);
+    this.removeControl();
+    this.blocks = [];
+
+    this.create();
+    this.levelStartAnim = true;
+    this.running = true;
+
+    setTimeout(() => {
+      this.levelStartAnim = false;
+      this.setControl();
+      this.platform.init(this.platform_types.START);
+      this.ball.init(this.platform);
+    }, 1500);
   },
   setControl: function () {
     const ratio = (this.width) / canvas.getBoundingClientRect().width;
-    window.addEventListener("mousemove", function (e) {
+    this.moveControl = function (e) {
       let ev = e || event;
       let relativeX = (ev.clientX - canvas.offsetLeft) * ratio;
       let new_x = relativeX - game.platform.width / 2;
@@ -230,35 +263,25 @@ const game = {
       else if (new_x + game.platform.width > canvas.width - game.border_width)
         new_x = canvas.width - game.platform.width - game.border_width;
       game.platform.move(new_x);
-    });
-
-    window.addEventListener('click', function () {
+    };
+    this.startControl = function () {
       if (game.inMenu) {
         game.start();
       }
       else if (game.running) {
         game.platform.releaseBall();
       }
-    });
-  },
-  newLevel: function () {
-    this.blocks = [];
-    this.platform.init(this.platform.MEDIUM);
-    this.ball.init(this.platform);
-    this.create();
-    this.running = true;
-    this.nextLevel = false;
-    this.run();
-    if (this.nextLevel) {
-      this.newLevel();
-    }
-    else {
-      // this.menu();
-    }
-  },
+    };
 
+    window.addEventListener("mousemove", this.moveControl);
+    window.addEventListener('click', this.startControl);
+  },
+  removeControl: function () {
+    window.removeEventListener("mousemove", this.moveControl);
+    window.removeEventListener('click', this.startControl);
+  },
   create: async function () {
-    const cur_level = this.levels["level_" + this.level];
+    const cur_level = game.levels["level_" + this.level];
     const start_y = cur_level.row_offset * this.block_height + this.border_width;
     const start_x = cur_level.column_offset * this.block_width + this.border_width;
 
@@ -278,13 +301,15 @@ const game = {
           true
         );
         this.blocks.push(cur_block);
-        this.block_number++;
+        if (cur_block_type_name !== "GOLD")
+          this.block_number++;
       }
     }
   },
   old_time: 0,
   run: function () {
-    this.update();
+    if (!this.levelStartAnim)
+      this.update();
     this.render();
 
     if (this.running) {
@@ -301,8 +326,6 @@ const game = {
   render: function () {
     this.ctx.clearRect(0, 0, this.width, this.height + this.info_height);
     this.ctx.drawImage(this.sprites.background, this.background.x, this.background.y, this.background.width, this.background.height, 0, 0, this.width, this.height);
-    this.ctx.drawImage(this.sprites.platform, this.platform.sprite.x, this.platform.sprite.y, this.platform.sprite.width, this.platform.sprite.height, Math.round(this.platform.x), Math.round(this.platform.y), this.platform.width, this.platform.height);
-    this.ctx.drawImage(this.sprites.platform, this.ball.sprite.x, this.ball.sprite.y, this.ball.sprite.width, this.ball.sprite.height, Math.round(this.ball.x), Math.round(this.ball.y), this.ball.width, this.ball.height);
     this.blocks.forEach(function (element) {
       if (element.isAlive) {
         this.ctx.drawImage(this.sprites.block, element.sprite.x, element.sprite.y, element.sprite.width, element.sprite.height, element.x, element.y, element.width, element.height);
@@ -317,6 +340,18 @@ const game = {
     this.ctx.fillStyle = "#fff";
     this.ctx.fillText(addSpace(this.score), this.border_width, this.height + 10 + 0.8);
     this.ctx.fillText(addSpace(this.best_score), this.width / 2, this.height + 10 + 0.8);
+
+    if (this.levelStartAnim) {
+      this.ctx.textAlign = "center";
+      this.ctx.fillStyle = "#fff";
+      this.ctx.fillText("ROUND " + this.level, this.width / 2, Math.round(2 * this.height / 3) + 0.8);
+      this.ctx.fillText("READY", this.width / 2, Math.round(2 * this.height / 3) + 20 + 0.8);
+    }
+    else {
+      this.ctx.drawImage(this.sprites.platform, this.platform.sprite.x, this.platform.sprite.y, this.platform.sprite.width, this.platform.sprite.height, Math.round(this.platform.x), Math.round(this.platform.y), this.platform.width, this.platform.height);
+      this.ctx.drawImage(this.sprites.platform, this.ball.sprite.x, this.ball.sprite.y, this.ball.sprite.width, this.ball.sprite.height, Math.round(this.ball.x), Math.round(this.ball.y), this.ball.width, this.ball.height);
+    }
+
     function addSpace(score) {
       return score.toString().split('').join(' ');
     }
@@ -353,12 +388,11 @@ const game = {
   over: function (win) {
     this.running = false;
     if (win) {
-      //console.log("Win");
       this.level++;
-      this.nextLevel = true;
+      this.newLevel();
     }
     else {
-      //console.log("Game over");
+
     }
   },
   play_audio(audio) {
@@ -533,43 +567,29 @@ game.ball = {
 }
 
 game.platform = {
-  SMALL: "small",
-  MEDIUM: "mid",
-  BIG: "big",
   type: undefined,
   x: undefined,
   y: undefined,
   width: undefined,
-  hight: undefined,
+  height: undefined,
   ball: undefined,
   sprite: undefined,
+  animator: undefined,
   animation: undefined,
 
 
-  init: function (type) {
-    if (type === this.MEDIUM) {
-      this.type = type;
-      this.width = 32;
-      this.height = 8;
+  init: function (platform_type) {
+    this.type = platform_type;
+    this.width = platform_type.width;
+    this.height = platform_type.height;
+    if (platform_type.type === "START") {
       this.x = game.width / 2 - this.width / 2;
       this.y = game.height * 0.9;
       this.ball = game.ball;
-      this.sprite = {
-        x: 32,
-        y: 40,
-        width: 32,
-        height: 8,
-      };
-      this.animation = {
-        x_start: 32,
-        y_start: 40,
-        x_step_size: 0,
-        y_step_size: -8,
-        number_of_steps: 6,
-        step_duration_ms: 200,
-      };
-      this.animatePlatform();
     }
+    this.sprite = platform_type.sprite;
+    this.animation = platform_type.animation;
+    this.animatePlatform();
   },
   move: function (new_x) {
     this.x = new_x;
@@ -588,22 +608,29 @@ game.platform = {
 
   animatePlatform: function () {
     let cur_step = 0;
-    const cur_type = this.type;
+    const cur_type = this.type.type;
+    if (this.animator)
+      clearInterval(this.animator);
+    this.animator = setInterval(() => {
 
-    const animator = setInterval(() => {
-
-      if (cur_type !== this.type) {
+      if (cur_type !== this.type.type) {
         clearInterval(animator);
         return;
       }
 
       cur_step = (cur_step + 1) % this.animation.number_of_steps;
+      if (this.animation.once === true && cur_step === 0) {
+        clearInterval(this.animator);
+        this.init(game.platform_types[this.type.nextType]);
+        return;
+      }
       this.sprite.x = this.animation.x_start + this.animation.x_step_size * cur_step;
       this.sprite.y = this.animation.y_start + this.animation.y_step_size * cur_step;
 
+
+
     }, this.animation.step_duration_ms, cur_type);
   }
-
 }
 
 window.addEventListener("load", function () {
