@@ -240,7 +240,7 @@ const game = {
     this.play_audio(this.sounds.level_start);
     this.removeControl();
     this.blocks = [];
-
+    this.ball.velocity = 0;
     this.create();
     this.levelStartAnim = true;
     this.running = true;

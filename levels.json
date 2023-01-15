@@ -2,7 +2,7 @@
     "name": "levels",
     "level_0": {
         "row_offset": 4,
-        "column_offset": 0,
+        "column_offset": 12,
         "structure": [
             [
                 "RED"
