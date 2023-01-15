@@ -79,32 +79,33 @@ class Block {
 
 const game = {
   ctx: undefined,
-  font_size: undefined,
+  font_size: 5,
   width: undefined,
   height: undefined,
-  border_width: undefined,
+  border_width: 8,
   info_height: undefined,
   block_types: undefined,
   platform_types: undefined,
-  block_width: undefined,
-  block_height: undefined,
+  block_width: 16,
+  block_height: 8,
   moveControl: undefined,
   startControl: undefined,
   blocks: undefined,
-  game_velocity: undefined,
-  game_intended_fps: undefined,
+  game_velocity: 2.5,
+  game_intended_fps: 60,
   ball: undefined,
   platform: undefined,
   score: 0,
   best_score: 0,
   block_number: 0,
   levels: undefined,
-  level: 1,
+  level: undefined,
   levelStartAnim: undefined,
   running: undefined,
   inMenu: undefined,
   background: undefined,
   audio_current_playing: undefined,
+  old_time: 0,
   sprites: {
     logo: undefined,
     background: undefined,
@@ -122,17 +123,11 @@ const game = {
 
   init: function () {
     const canvas = document.getElementById("canvas");
-    this.game_velocity = 2.5;
-    this.game_intended_fps = 60;
     this.ctx = canvas.getContext("2d");
     this.info_height = Math.round(canvas.height / 13);
     this.width = canvas.width;
     this.height = canvas.height - this.info_height;
-    this.border_width = 8;
-    this.block_width = 16;
-    this.block_height = 8;
     this.font_size = Math.round(this.info_height / 4);
-    this.font_size = 5;
     this.ctx.font = this.font_size + "px pixelFont";
     this.ctx.textBaseline = "top";
 
@@ -205,19 +200,20 @@ const game = {
   },
   menu: function () {
     this.play_audio(this.sounds.main_menu);
+    this.level = 1;
     this.ctx.clearRect(0, 0, this.width, this.height + this.info_height);
     this.ctx.fillStyle = "#111111";
     this.ctx.fillRect(0, 0, this.width, this.height + this.info_height);
     this.ctx.drawImage(this.sprites.logo, Math.round(this.width / 2 - this.sprites.logo.width / 2), Math.round(this.height / 4), this.sprites.logo.width, this.sprites.logo.height);
-    // this.ctx.fillStyle = "#ff0000";
-    // this.ctx.fillText("Score", this.border_width, this.height + 2 + 0.8);
-    // this.ctx.fillText("High score", this.width / 2, this.height + 2 + 0.8);
-    // this.ctx.fillStyle = "#fff";
-    // this.ctx.fillText(addSpace(this.score), this.border_width, this.height + 10 + 0.8);
-    // this.ctx.fillText(addSpace(this.best_score), this.width / 2, this.height + 10 + 0.8);
-    // function addSpace(score) {
-    //   return score.toString().split('').join(' ');
-    // }
+    this.ctx.fillStyle = "#ff0000";
+    this.ctx.fillText("Score", this.border_width, this.height + 2 + 0.8);
+    this.ctx.fillText("High score", this.width / 2, this.height + 2 + 0.8);
+    this.ctx.fillStyle = "#fff";
+    this.ctx.fillText(addSpace(this.score), this.border_width, this.height + 10 + 0.8);
+    this.ctx.fillText(addSpace(this.best_score), this.width / 2, this.height + 10 + 0.8);
+    function addSpace(score) {
+      return score.toString().split('').join(' ');
+    }
     this.ctx.textAlign = "center";
     let timeout;
     const interval = setInterval(() => {
@@ -231,6 +227,7 @@ const game = {
     }, 700);
 
     window.addEventListener('click', function listener() {
+      game.score = 0;
       clearTimeout(timeout);
       clearInterval(interval);
       game.start();
@@ -290,6 +287,7 @@ const game = {
     const start_x = cur_level.column_offset * this.block_width + this.border_width;
 
     this.background = cur_level.background_sprite;
+    this.block_number = 0;
 
     for (let row = 0; row < cur_level.structure.length; row++) {
       for (let col = 0; col < cur_level.structure[row].length; col++) {
@@ -310,13 +308,13 @@ const game = {
       }
     }
   },
-  old_time: 0,
+
   run: function () {
     if (!this.levelStartAnim)
       this.update();
-    this.render();
 
     if (this.running) {
+      this.render();
       requestAnimationFrame((time) => {
         this.ball.fpsAdjust(time - this.old_time)
         this.old_time = time;
@@ -395,6 +393,7 @@ const game = {
     }
     else {
 
+      setTimeout(() => { this.menu() }, 0);
     }
   },
   play_audio(audio) {
