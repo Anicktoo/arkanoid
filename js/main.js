@@ -91,13 +91,15 @@ const game = {
   moveControl: undefined,
   startControl: undefined,
   blocks: undefined,
+  game_velocity: undefined,
+  game_intended_fps: undefined,
   ball: undefined,
   platform: undefined,
   score: 0,
   best_score: 0,
   block_number: 0,
   levels: undefined,
-  level: 0,
+  level: 1,
   levelStartAnim: undefined,
   running: undefined,
   inMenu: undefined,
@@ -120,6 +122,8 @@ const game = {
 
   init: function () {
     const canvas = document.getElementById("canvas");
+    this.game_velocity = 2.5;
+    this.game_intended_fps = 60;
     this.ctx = canvas.getContext("2d");
     this.info_height = Math.round(canvas.height / 13);
     this.width = canvas.width;
@@ -237,19 +241,19 @@ const game = {
     this.run();
   },
   newLevel: function () {
+    this.levelStartAnim = true;
     this.play_audio(this.sounds.level_start);
     this.removeControl();
     this.blocks = [];
-    this.ball.velocity = 0;
+    //this.ball.velocity = 0;
     this.create();
-    this.levelStartAnim = true;
     this.running = true;
 
     setTimeout(() => {
-      this.levelStartAnim = false;
       this.setControl();
       this.platform.init(this.platform_types.START);
       this.ball.init(this.platform);
+      this.levelStartAnim = false;
     }, 1500);
   },
   setControl: function () {
@@ -314,10 +318,8 @@ const game = {
 
     if (this.running) {
       requestAnimationFrame((time) => {
-        if (time < 10000) {
-          console.log(time - this.old_time);
-          this.old_time = time;
-        }
+        this.ball.fpsAdjust(time - this.old_time)
+        this.old_time = time;
         this.run();
       });
       //setTimeout(() => { game.run() }, 10);
@@ -564,6 +566,12 @@ game.ball = {
       game.over(false);
     }
   },
+  fpsAdjust: function (time) {
+    console.log(time);
+    const v = game.game_velocity * time / (1000 / game.game_intended_fps);
+    console.log(v);
+    this.velocity = v;
+  }
 }
 
 game.platform = {
