@@ -173,7 +173,7 @@ const game = {
   },
   menu: function () {
     this.play_audio(this.sounds.main_menu);
-    this.level = 4;
+    this.level = 1;
     this.ctx.clearRect(0, 0, this.width, this.height + this.info_height);
     this.ctx.fillStyle = "#111111";
     this.ctx.fillRect(0, 0, this.width, this.height + this.info_height);
