@@ -130,37 +130,6 @@ const game = {
     this.font_size = Math.round(this.info_height / 4);
     this.ctx.font = this.font_size + "px pixelFont";
     this.ctx.textBaseline = "top";
-
-    function loadBlocks() {
-      return new Promise((resolve) => {
-        fetch("../block_types.json")
-          .then((data) => data.json())
-          .then((json) => {
-            game.block_types = json;
-            resolve();
-          });
-      })
-    };
-    function loadPlatform() {
-      return new Promise((resolve) => {
-        fetch("../platform_types.json")
-          .then((data) => data.json())
-          .then((json) => {
-            game.platform_types = json;
-            resolve();
-          });
-      })
-    };
-    function loadLevel() {
-      return new Promise((resolve) => {
-        fetch("../levels.json")
-          .then((data) => data.json())
-          .then((json) => {
-            game.levels = json;
-            resolve();
-          });
-      })
-    };
     function loadSprites() {
       return new Promise((resolve) => {
         const keys = Object.keys(game.sprites);
@@ -194,7 +163,7 @@ const game = {
         loop(keys[i]);
       })
     };
-    Promise.all([loadSprites(), loadLevel(), loadBlocks(), loadPlatform(), loadSounds()])
+    Promise.all([loadSprites(), loadSounds()])
       .then(() => { this.menu() });
 
   },
@@ -639,6 +608,420 @@ game.platform = {
     }, this.animation.step_duration_ms, cur_type);
   }
 }
+
+game.block_types = {
+  NULL: {
+    type: "NULL",
+  },
+  WHITE: {
+    type: "WHITE",
+    sprite: {
+      x: 0,
+      y: 0,
+      width: 16,
+      height: 8
+    },
+    score: 50
+  },
+  ORANGE: {
+    type: "ORANGE",
+    sprite: {
+      x: 16,
+      y: 0,
+      width: 16,
+      height: 8
+    },
+    score: 60
+  },
+  RED: {
+    type: "RED",
+    sprite: {
+      x: 0,
+      y: 8,
+      width: 16,
+      height: 8
+    },
+    score: 90
+  },
+  BLUE: {
+    type: "BLUE",
+    sprite: {
+      x: 16,
+      y: 8,
+      width: 16,
+      height: 8
+    },
+    score: 100
+  },
+  CYAN: {
+    type: "CYAN",
+    sprite: {
+      x: 32,
+      y: 0,
+      width: 16,
+      height: 8
+    },
+    score: 70
+  },
+  GREEN: {
+    type: "GREEN",
+    sprite: {
+      x: 48,
+      y: 0,
+      width: 16,
+      height: 8
+    },
+    score: 80
+  },
+  MAGENTA: {
+    type: "MAGENTA",
+    sprite: {
+      x: 32,
+      y: 8,
+      width: 16,
+      height: 8
+    },
+    score: 110
+  },
+  YELLOW: {
+    type: "YELLOW",
+    sprite: {
+      x: 48,
+      y: 8,
+      width: 16,
+      height: 8
+    },
+    score: 120
+  },
+  SILVER: {
+    type: "SILVER",
+    sprite: {
+      x: 0,
+      y: 16,
+      width: 16,
+      height: 8
+    },
+    animation: {
+      x_start: 0,
+      y_start: 16,
+      x_step_size: 16,
+      y_step_size: 0,
+      number_of_steps: 6,
+      step_duration_ms: 100
+    },
+    score: 50
+  },
+  GOLD: {
+    type: "GOLD",
+    sprite: {
+      x: 0,
+      y: 24,
+      width: 16,
+      height: 8
+    },
+    animation: {
+      x_start: 0,
+      y_start: 24,
+      x_step_size: 16,
+      y_step_size: 0,
+      number_of_steps: 6,
+      step_duration_ms: 100
+    }
+  }
+};
+
+game.platform_types = {
+  START: {
+    type: "START",
+    width: 32,
+    height: 8,
+    sprite: {
+      x: 0,
+      y: 48,
+      width: 32,
+      height: 8
+    },
+    animation: {
+      x_start: 0,
+      y_start: 0,
+      x_step_size: 0,
+      y_step_size: 8,
+      number_of_steps: 5,
+      step_duration_ms: 200,
+      once: true
+    },
+    nextType: "MID"
+  },
+  MID: {
+    type: "MID",
+    width: 32,
+    height: 8,
+    sprite: {
+      x: 32,
+      y: 40,
+      width: 32,
+      height: 8
+    },
+    animation: {
+      x_start: 32,
+      y_start: 40,
+      x_step_size: 0,
+      y_step_size: -8,
+      number_of_steps: 6,
+      step_duration_ms: 200,
+      once: false
+    }
+  }
+};
+
+game.levels = {
+  level_0: {
+    row_offset: 4,
+    column_offset: 12,
+    structure: [
+      [
+        "RED"
+      ]
+    ],
+    background_sprite: {
+      x: 0,
+      y: 0,
+      width: 224,
+      height: 240
+    }
+  },
+  level_1: {
+    row_offset: 4,
+    column_offset: 0,
+    structure: [
+      [
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER"
+      ],
+      [
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED",
+        "RED"
+      ],
+      [
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW",
+        "YELLOW"
+      ],
+      [
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE",
+        "BLUE"
+      ],
+      [
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA",
+        "MAGENTA"
+      ],
+      [
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN",
+        "GREEN"
+      ]
+    ],
+    background_sprite: {
+      x: 0,
+      y: 0,
+      width: 224,
+      height: 240
+    }
+  },
+  level_2: {
+    row_offset: 2,
+    column_offset: 0,
+    structure: [
+      [
+        "WHITE"
+      ],
+      [
+        "WHITE",
+        "ORANGE"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED",
+        "BLUE"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED",
+        "BLUE",
+        "MAGENTA"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED",
+        "BLUE",
+        "MAGENTA",
+        "YELLOW"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED",
+        "BLUE",
+        "MAGENTA",
+        "YELLOW",
+        "WHITE"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED",
+        "BLUE",
+        "MAGENTA",
+        "YELLOW",
+        "WHITE",
+        "ORANGE"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED",
+        "BLUE",
+        "MAGENTA",
+        "YELLOW",
+        "WHITE",
+        "ORANGE",
+        "CYAN"
+      ],
+      [
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN",
+        "RED",
+        "BLUE",
+        "MAGENTA",
+        "YELLOW",
+        "WHITE",
+        "ORANGE",
+        "CYAN",
+        "GREEN"
+      ],
+      [
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "SILVER",
+        "RED"
+      ]
+    ],
+    background_sprite: {
+      x: 232,
+      y: 0,
+      width: 224,
+      height: 240
+    }
+  }
+};
 
 window.addEventListener("load", function () {
   game.init();
