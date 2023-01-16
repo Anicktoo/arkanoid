@@ -42,6 +42,10 @@ class Block {
         this.lastLife = true;
       }
     }
+    else if (this.type === game.block_types.GOLD.type) {
+      game.play_audio(game.sounds.strong_block);
+      this.animateBlock(this.animation);
+    }
     else {
       game.play_audio(game.sounds.standart_block);
       this.destroyBlock();
@@ -169,7 +173,7 @@ const game = {
   },
   menu: function () {
     this.play_audio(this.sounds.main_menu);
-    this.level = 1;
+    this.level = 4;
     this.ctx.clearRect(0, 0, this.width, this.height + this.info_height);
     this.ctx.fillStyle = "#111111";
     this.ctx.fillRect(0, 0, this.width, this.height + this.info_height);
@@ -794,228 +798,93 @@ game.levels = {
     row_offset: 4,
     column_offset: 0,
     structure: [
-      [
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER"
-      ],
-      [
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED",
-        "RED"
-      ],
-      [
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW",
-        "YELLOW"
-      ],
-      [
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE",
-        "BLUE"
-      ],
-      [
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA",
-        "MAGENTA"
-      ],
-      [
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN",
-        "GREEN"
-      ]
+      ["SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER"],
+      ["RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED"],
+      ["YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW", "YELLOW"],
+      ["BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE", "BLUE"],
+      ["MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA"],
+      ["GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN"]
     ],
     background_sprite: {
       x: 0,
       y: 0,
       width: 224,
       height: 240
-    }
+    },
   },
   level_2: {
     row_offset: 2,
     column_offset: 0,
     structure: [
-      [
-        "WHITE"
-      ],
-      [
-        "WHITE",
-        "ORANGE"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED",
-        "BLUE"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED",
-        "BLUE",
-        "MAGENTA"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED",
-        "BLUE",
-        "MAGENTA",
-        "YELLOW"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED",
-        "BLUE",
-        "MAGENTA",
-        "YELLOW",
-        "WHITE"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED",
-        "BLUE",
-        "MAGENTA",
-        "YELLOW",
-        "WHITE",
-        "ORANGE"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED",
-        "BLUE",
-        "MAGENTA",
-        "YELLOW",
-        "WHITE",
-        "ORANGE",
-        "CYAN"
-      ],
-      [
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN",
-        "RED",
-        "BLUE",
-        "MAGENTA",
-        "YELLOW",
-        "WHITE",
-        "ORANGE",
-        "CYAN",
-        "GREEN"
-      ],
-      [
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "SILVER",
-        "RED"
-      ]
+      ["WHITE"],
+      ["WHITE", "ORANGE"],
+      ["WHITE", "ORANGE", "CYAN"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE", "CYAN"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "RED", "BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE", "CYAN", "GREEN"],
+      ["SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "SILVER", "RED"]
     ],
     background_sprite: {
       x: 232,
+      y: 0,
+      width: 224,
+      height: 240
+    }
+  },
+  level_3: {
+    row_offset: 4,
+    column_offset: 1,
+    structure: [
+      ["ORANGE", "CYAN", "GREEN", "SILVER", "BLUE", "NULL", "YELLOW", "WHITE", "ORANGE", "CYAN", "GREEN"],
+      ["CYAN", "GREEN", "SILVER", "BLUE", "MAGENTA", "NULL", "WHITE", "ORANGE", "CYAN", "GREEN", "SILVER"],
+      ["GREEN", "SILVER", "BLUE", "MAGENTA", "YELLOW", "NULL", "ORANGE", "CYAN", "GREEN", "SILVER", "BLUE"],
+      ["SILVER", "BLUE", "MAGENTA", "YELLOW", "WHITE", "NULL", "CYAN", "GREEN", "SILVER", "BLUE", "MAGENTA"],
+      ["BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE", "NULL", "GREEN", "SILVER", "BLUE", "MAGENTA", "YELLOW"],
+      ["MAGENTA", "YELLOW", "WHITE", "ORANGE", "CYAN", "NULL", "SILVER", "BLUE", "MAGENTA", "YELLOW", "WHITE"],
+      ["YELLOW", "WHITE", "ORANGE", "CYAN", "GREEN", "NULL", "BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE"],
+      ["WHITE", "ORANGE", "CYAN", "GREEN", "SILVER", "NULL", "MAGENTA", "YELLOW", "WHITE", "ORANGE", "CYAN"],
+      ["ORANGE", "CYAN", "GREEN", "SILVER", "BLUE", "NULL", "YELLOW", "WHITE", "ORANGE", "CYAN", "GREEN"],
+      ["CYAN", "GREEN", "SILVER", "BLUE", "MAGENTA", "NULL", "WHITE", "ORANGE", "CYAN", "GREEN", "SILVER"],
+      ["GREEN", "SILVER", "BLUE", "MAGENTA", "YELLOW", "NULL", "ORANGE", "CYAN", "GREEN", "SILVER", "BLUE"],
+      ["SILVER", "BLUE", "MAGENTA", "YELLOW", "WHITE", "NULL", "CYAN", "GREEN", "SILVER", "BLUE", "MAGENTA"],
+      ["BLUE", "MAGENTA", "YELLOW", "WHITE", "ORANGE", "NULL", "GREEN", "SILVER", "BLUE", "MAGENTA", "YELLOW"],
+      ["MAGENTA", "YELLOW", "WHITE", "ORANGE", "CYAN", "NULL", "SILVER", "BLUE", "MAGENTA", "YELLOW", "WHITE"],
+    ],
+    background_sprite: {
+      x: 696,
+      y: 0,
+      width: 224,
+      height: 240
+    }
+  },
+  level_4: {
+    row_offset: 3,
+    column_offset: 0,
+    structure: [
+      ["GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN", "GREEN"],
+      ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      ["WHITE", "WHITE", "WHITE", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD"],
+      ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      ["RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED", "RED"],
+      ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      ["GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "WHITE", "WHITE", "WHITE"],
+      ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      ["MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA", "MAGENTA"],
+      ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      ["BLUE", "BLUE", "BLUE", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD"],
+      ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      ["CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN", "CYAN"],
+      ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      ["GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "GOLD", "CYAN", "CYAN", "CYAN"],
+    ],
+    background_sprite: {
+      x: 464,
       y: 0,
       width: 224,
       height: 240
