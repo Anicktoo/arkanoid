@@ -1,6 +1,6 @@
-const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
+// const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+//   window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+// const cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
 
 class Block {
   x;
@@ -104,6 +104,7 @@ const game = {
   block_number: 0,
   levels: undefined,
   level: undefined,
+  MAX_LEVEL: 4,
   levelStartAnim: undefined,
   running: undefined,
   inMenu: undefined,
@@ -215,7 +216,6 @@ const game = {
     this.play_audio(this.sounds.level_start);
     this.removeControl();
     this.blocks = [];
-    //this.ball.velocity = 0;
     this.create();
     this.running = true;
 
@@ -239,12 +239,7 @@ const game = {
       game.platform.move(new_x);
     };
     this.startControl = function () {
-      if (game.inMenu) {
-        game.start();
-      }
-      else if (game.running) {
-        game.platform.releaseBall();
-      }
+      game.platform.releaseBall();
     };
 
     window.addEventListener("mousemove", this.moveControl);
@@ -254,7 +249,7 @@ const game = {
     window.removeEventListener("mousemove", this.moveControl);
     window.removeEventListener('click', this.startControl);
   },
-  create: async function () {
+  create: function () {
     const cur_level = game.levels["level_" + this.level];
     const start_y = cur_level.row_offset * this.block_height + this.border_width;
     const start_x = cur_level.column_offset * this.block_width + this.border_width;
@@ -345,7 +340,7 @@ const game = {
       if (collision.far !== -1) {
         this.ball.bump(collision.el, collision.side);
       }
-    } while (this.ball.closest_collision.far !== -1);
+    } while (this.ball.closest_collision.far !== -1 && !this.levelStartAnim);
 
     if (this.ball.dirX || this.ball.dirY) {
       this.ball.move();
@@ -361,11 +356,14 @@ const game = {
   over: function (win) {
     this.running = false;
     if (win) {
-      this.level++;
-      this.newLevel();
+      if (this.level++ === this.MAX_LEVEL) {
+        setTimeout(() => { this.menu() }, 0);
+      }
+      else {
+        this.newLevel();
+      }
     }
     else {
-
       setTimeout(() => { this.menu() }, 0);
     }
   },
@@ -539,9 +537,7 @@ game.ball = {
     }
   },
   fpsAdjust: function (time) {
-    console.log(time);
     const v = game.game_velocity * time / (1000 / game.game_intended_fps);
-    console.log(v);
     this.velocity = v;
   }
 }
@@ -780,8 +776,8 @@ game.platform_types = {
 
 game.levels = {
   level_0: {
-    row_offset: 4,
-    column_offset: 12,
+    row_offset: 5,
+    column_offset: 6,
     structure: [
       [
         "RED"
